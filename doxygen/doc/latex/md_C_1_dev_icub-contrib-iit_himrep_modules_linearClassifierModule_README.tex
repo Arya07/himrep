@@ -1,0 +1,16 @@
+\subsubsection*{Dependencies}
+
+This module needs \href{https://www.csie.ntu.edu.tw/~cjlin/liblinear/}{\tt L\+I\+B\+L\+I\+N\+E\+AR}. We have included a version (source code) of the library here, in the {\ttfamily liblinear-\/1.\+91} folder.
+
+In order to build it, you have to\+:
+
+
+\begin{DoxyItemize}
+\item compile from within the directory where the corresponding {\ttfamily cmakefile} is located
+\item place the resulting static library in the same directory of the {\ttfamily liblinear} package
+\item finally, set the environment variable {\ttfamily L\+I\+B\+S\+V\+M\+L\+I\+N\+\_\+\+D\+IR} to point at the same location
+\end{DoxyItemize}
+
+\subsubsection*{Compilation}
+
+Once the library has been built as explained above, you can compile this module just by setting the {\ttfamily B\+U\+I\+L\+D\+\_\+linear\+Classifier\+Module} flag to {\ttfamily ON} as explained \href{https://www.github.com/robotology/himrep/#compilation}{\tt here}. 
