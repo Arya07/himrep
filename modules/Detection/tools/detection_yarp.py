@@ -37,10 +37,11 @@ class Detector (yarp.RFModule):
          self._caffemodel = caffemodel
          self._prototxt = prototxt
          self._classes = classes
-	     self._colors = ((0,0,60),(0,0,120),(0,0,180),(0,0,240),(60,0,0),(120,0,0),(180,0,0),(240,0,0),(0,60,0),(0,120,0),(0,180,0),(0,240,0),(0,60,60),(60,0,60),(0,120,120),(120,0,120),(0,180,180),(180,180,0),(240,0,240),(240,240,0),(180,180,180))
-	     print self._classes
+         self._colors = ((0,0,60),(0,0,120),(0,0,180),(0,0,240),(60,0,0),(120,0,0),(180,0,0),(240,0,0),(0,60,0),(0,120,0),(0,180,0),
+                        (0,240,0),(0,60,60),(60,0,60),(0,120,120),(120,0,120),(0,180,180),(180,180,0),(240,0,240),(240,240,0),(180,180,180))
+         print self._classes
 
-
+#self._colors = ((0,0,60),(0,0,120),(0,0,180),(0,0,240),(60,0,0),(120,0,0),(180,0,0),(240,0,0),(0,60,0),(0,120,0),(0,180,0),(0,240,0),(0,60,60),(60,0,60),(0,120,120),(120,0,120),(0,180,180),(180,180,0),(240,0,240),(240,240,0),(180,180,180))
          if cpu_mode:
              caffe.set_mode_cpu()
          else:
@@ -65,9 +66,9 @@ class Detector (yarp.RFModule):
          self._out_det_img_port_name = out_det_img_port_name
          self._out_det_img_port.open(self._out_det_img_port_name)
 
-          self._out_img_port = yarp.Port()
-          self._out_img_port_name = out_img_port_name
-          self._out_img_port.open(self._out_img_port_name)
+         self._out_img_port = yarp.Port()
+         self._out_img_port_name = out_img_port_name
+         self._out_img_port.open(self._out_img_port_name)
 
          ## Prepare image buffers
          ### Input
@@ -85,7 +86,7 @@ class Detector (yarp.RFModule):
          self._out_buf_array = np.zeros((image_h, image_w, 3), dtype = np.uint8)
          self._out_buf_image.setExternal(self._out_buf_array, self._out_buf_array.shape[1], self._out_buf_array.shape[0])
 
-         # rpc port initialization
+        			             # rpc port initialization
          print 'prepare rpc threshold port'
          self._rpc_thresh_port = yarp.RpcServer()
          self._rpc_thresh_port.open(rpc_thresh_port_name)
@@ -135,7 +136,7 @@ class Detector (yarp.RFModule):
                     for i in inds:
                         bbox = dets[i, :4] #bbox = [tl_x, tl_y, br_x, br_y]
                         score = dets[i, -1]
-			            color = self._colors[cls_ind]
+                        color = self._colors[cls_ind]
                         cv2.rectangle(im,(bbox[0], bbox[1]),(bbox[2], bbox[3]),color, 2)
 
                         font = cv2.FONT_HERSHEY_TRIPLEX
@@ -204,22 +205,21 @@ class Detector (yarp.RFModule):
         print 'sending detections...\n'
         detection = yarp.Bottle()
         stamp = yarp.Stamp()
-
+        print dets
         for i in range(len(dets)):
+            for j in range(len(dets[i])):
+                d = dets[i][j]
+                cls_id = int(d[5])
+                print 'sending detection for class ' + self._classes[cls_id] + '\n'
 
-            d = dets[i][0]
-            #print len(dets[i])
-            #cls_id = int(d[5])
-            #print 'sending detection for class ' + self._classes[cls_id] + '\n'
+                det_list = detection.addList()
 
-            det_list = detection.addList()
-
-            det_list.addDouble(d[0])
-            det_list.addDouble(d[1])
-            det_list.addDouble(d[2])
-            det_list.addDouble(d[3])
-            det_list.addDouble(d[4])
-            det_list.addString(self._classes[cls_id])
+                det_list.addDouble(d[0])
+                det_list.addDouble(d[1])
+                det_list.addDouble(d[2])
+                det_list.addDouble(d[3])
+                det_list.addDouble(d[4])
+                det_list.addString(self._classes[cls_id])
 
         self._out_det_port.setEnvelope(stamp)
         self._out_img_port.setEnvelope(stamp)
